@@ -20,6 +20,7 @@ connectDB();
 
 // TODO 
 // - implement eslint
+// - create routers for traveldestination and user
 
 const uri = "mongodb://localhost:27017";
 const client = new MongoClient(uri, {
@@ -55,6 +56,8 @@ app.get("/api/traveldestinations/:id", async (req, res) => {
 app.post("/api/traveldestinations", async (req, res) => {
     try {
       const { title, description, locationId, picture, userId } = req.body; // Destructure the request body
+      
+      //TODO change date so that it actually takes dates from user input in the frontend
       const dateFrom = new Date(2024, 0, 1);
       const dateTo = new Date(2024, 11, 31);
       const createDate = new Date();
@@ -73,7 +76,7 @@ app.post("/api/traveldestinations", async (req, res) => {
       };
   
       await client.connect(); 
-      const myDB = client.db("travel_"); 
+      const myDB = client.db("travel_destination"); 
       const myColl = myDB.collection("traveldestinations"); 
       await myColl.insertOne(travelDestination);
   
@@ -97,7 +100,7 @@ app.post("/api/traveldestinations", async (req, res) => {
       const updateData = req.body;
   
       await client.connect();
-      const myDB = client.db("nosql_project");
+      const myDB = client.db("travel_destination");
       const myColl = myDB.collection("traveldestinations");
   
       const result = await myColl.updateOne(
@@ -128,7 +131,7 @@ app.post("/api/traveldestinations", async (req, res) => {
       }
   
       await client.connect();
-      const myDB = client.db("nosql_project");
+      const myDB = client.db("travel_destination");
       const myColl = myDB.collection("traveldestinations");
   
       // Delete the travel destination with the given ObjectId
