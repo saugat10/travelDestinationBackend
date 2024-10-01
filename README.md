@@ -1,4 +1,4 @@
-# travelDestinationBackend
+# Travel Destination Backend
 Project by Orestis, Saugat, Andrea
 
 # How to install

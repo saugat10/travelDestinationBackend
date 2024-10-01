@@ -44,7 +44,7 @@ app.get("/api/traveldestinations", async (req, res) => {
 
 app.get("/api/traveldestinations/:id", async (req, res) => {
   try {
-    const travelDestination = await TravelDestination.findOne({ destinationId: req.params.id });
+    const travelDestination = await TravelDestination.findOne({ _id: req.params.id });
     res.status(200).json(travelDestination);
   } catch (error) {
     console.error(`Error fetching data: ${error.message}`);
@@ -73,7 +73,7 @@ app.post("/api/traveldestinations", async (req, res) => {
       };
   
       await client.connect(); 
-      const myDB = client.db("nosql_project"); 
+      const myDB = client.db("travel_"); 
       const myColl = myDB.collection("traveldestinations"); 
       await myColl.insertOne(travelDestination);
   
