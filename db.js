@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { User, TravelDestination, Location, Country } from './model.js';
+import bcrypt from "bcrypt";
 
 const dbName = "travel_destination";
 
@@ -46,11 +47,13 @@ const connectDB = async () => {
         if (!collectionNames.includes('users') || (await User.countDocuments()) === 0) {
             await User.init();
             console.log('Created Users collection');
+
+            const hashedPassword = await bcrypt.hash("password123", 10);
             
             user = await User.create({
                 username: "John Doe",
                 email: "john@example.com",
-                password: "password123",
+                password: hashedPassword,
                 createDate: new Date()
             });
             console.log('Added default user to Users collection\n');
