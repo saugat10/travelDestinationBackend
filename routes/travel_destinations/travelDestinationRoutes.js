@@ -47,12 +47,19 @@ router.post("/", async (req, res) => {
       userId: new ObjectId(userId),
       createDate,
     };
-
     await TravelDestination.create(travelDestination);
     res.status(201).json(travelDestination);
+    // console.log(travelDestination);
   } catch (error) {
-    console.error(`Error creating data: ${error.message}`);
-    res.status(500).json({ message: "Server error" });
+    // log the error to see what it contains and return what you need from it to the frontend
+    console.error(error.errors);
+    // Return Mongoose validation error to the frontend
+    if (error.errors) {
+      res.status(400).json({ error: error.errors });
+    } else {
+      console.error(`Error creating data: ${error}`);
+      res.status(500).json({ message: "Server error" });
+    }
   }
 });
 
@@ -62,7 +69,10 @@ router.put("/:id", async (req, res) => {
     const id = req.params.id;
     const updateData = req.body;
 
-    const result = await TravelDestination.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+    const result = await TravelDestination.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateData }
+    );
     if (result.modifiedCount === 0) {
       return res.status(404).json({ message: "Travel destination not found" });
     }
