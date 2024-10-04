@@ -51,7 +51,9 @@ const connectDB = async () => {
             const hashedPassword = await bcrypt.hash("password123", 10);
             
             user = await User.create({
-                username: "John Doe",
+                username: "Johnny1234",
+                firstname: "John",
+                lastname: "Does",
                 email: "john@example.com",
                 password: hashedPassword,
                 createDate: new Date()
