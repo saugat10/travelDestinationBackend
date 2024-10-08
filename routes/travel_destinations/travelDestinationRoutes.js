@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
     res.status(201).json(travelDestination);
     // console.log(travelDestination);
   } catch (error) {
-    // log the error to see what it contains and return what you need from it to the frontend
+    // log the error object and return what you need from it to the frontend
     console.error(error.errors);
     // Return Mongoose validation error to the frontend
     if (error.errors) {

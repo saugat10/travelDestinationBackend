@@ -2,16 +2,27 @@ import mongoose from "mongoose";
 
 // User Schema
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  username: { type: String, unique: true, required: "User must be filled" },
+  firstname: { type: String, required: "First name must be filled" },
+  lastname: { type: String, required: "Last name must be filled" },
+  email: {
+    type: String,
+    unique: true,
+    match: /.+@.+\..+/,
+    required: "Email must be valid and filled",
+  },
+  password: {
+    type: String,
+    minlength: [6, "Password must be at least 6 characters long"],
+    required: "Password must be filled",
+  },
   createDate: { type: Date, default: Date.now },
 });
 
 // Travel Destination Schema
 const travelDestinationSchema = new mongoose.Schema({
-  title: { type: String, required: "invalid title" },
-  description: { type: String },
+  title: { type: String, required: "Title must be filled" },
+  description: { type: String, required: "Description must be filled" },
   locationId: { type: mongoose.Schema.Types.ObjectId, ref: "Location" }, //  reference to Location
   picture: { type: String }, // Assuming the picture is a URL
   dateFrom: { type: Date },
