@@ -1,6 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { TravelDestination, User } from "../../model.js"; // Import your model
+import { TravelDestination, User } from "../../model.js"; 
 
 const router = express.Router();
 
