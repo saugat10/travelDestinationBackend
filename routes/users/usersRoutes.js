@@ -25,6 +25,8 @@ router.get("/profile", authenticateJWT, async (req, res) => {
             res.status(200).json({ 
                 message: `Welcome ${user.username}`, 
                 user: { 
+                    firstname: user.firstname,
+                    lastname: user.lastname,
                     email: user.email,
                     username: user.username, 
                 }

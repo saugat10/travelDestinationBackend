@@ -72,7 +72,6 @@ router.get("/byUserEmail/:email", authenticateJWT, async (req, res) => {
 router.post("/", authenticateJWT, async (req, res) => {
   try {
     const { title, description, dateFrom, dateTo, location, picture, user } = req.body;
-    console.log(user);
 
     const createDate = new Date();
 
