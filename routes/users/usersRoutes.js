@@ -2,30 +2,13 @@ import express from "express";
 import { ObjectId } from "mongodb";
 import { User } from "../../model.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import authenticateJWT from "../middleware.js";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
 const router = express.Router();
-
-const authenticateJWT = (req, res, next) => {   
-    const secretKey = process.env.JWT_SECRET;
-    
-    const token = req.headers.authorization?.split(' ')[1];  // Get the token from the Authorization header
-
-    if (token) {
-        jwt.verify(token, secretKey, (err, user) => {
-            if (err) {
-                return res.status(403).json({ message: "Forbidden: Invalid token" });
-            }
-            req.user = user;
-            next();
-        });
-    } else {
-        return res.status(401).json({ message: "Unauthorized: No token provided" });
-    }
-};
 
 router.get("/profile", authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
@@ -43,9 +26,7 @@ router.get("/profile", authenticateJWT, async (req, res) => {
                 message: `Welcome ${user.username}`, 
                 user: { 
                     email: user.email,
-                    username: user.username,
-                    firstname: user.firstname,  
-                    lastname: user.lastname
+                    username: user.username, 
                 }
             });
         } else {

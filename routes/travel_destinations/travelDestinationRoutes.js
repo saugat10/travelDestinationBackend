@@ -1,6 +1,7 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { TravelDestination, User } from "../../model.js"; 
+import { TravelDestination, User } from "../../model.js";
+import authenticateJWT from "../middleware.js";
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/byUserEmail/:email", async (req, res) => {
+router.get("/byUserEmail/:email", authenticateJWT, async (req, res) => {
   try {
     const email = req.params.email;
 
@@ -40,7 +41,7 @@ router.get("/byUserEmail/:email", async (req, res) => {
     const travelDestinations = await TravelDestination
       .find({ userId: user._id })
       .populate({
-        path: 'locationId', 
+        path: 'locationId',
         select: 'location countryId', // select location and countryId
         populate: { path: 'countryId', select: 'country' } // populate countryId
       })
@@ -68,29 +69,36 @@ router.get("/byUserEmail/:email", async (req, res) => {
 });
 
 // Create a travel destination
-router.post("/", async (req, res) => {
+router.post("/", authenticateJWT, async (req, res) => {
   try {
-    const { title, description, locationId, picture, userId } = req.body;
+    const { title, description, dateFrom, dateTo, location, picture, user } = req.body;
+    console.log(user);
 
-    // TODO: Accept date input from the user
-    const dateFrom = new Date(2024, 0, 1);
-    const dateTo = new Date(2024, 11, 31);
     const createDate = new Date();
 
+    const userFound = await User.findOne({ email: user.email });
+
+    // Check if the user exists
+    if (!userFound) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    //TODO: double check that the locationId and userId really exists
     const travelDestination = {
       destinationId: new ObjectId(),
       title,
       description,
-      locationId: new ObjectId(locationId),
+      locationId: new ObjectId(location),
       picture,
       dateFrom,
       dateTo,
-      userId: new ObjectId(userId),
+      userId: new ObjectId(userFound._id),
       createDate,
     };
 
     await TravelDestination.create(travelDestination);
     res.status(201).json(travelDestination);
+
   } catch (error) {
     console.error(`Error creating data: ${error.message}`);
     res.status(500).json({ message: "Server error" });
