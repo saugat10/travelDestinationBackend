@@ -11,6 +11,7 @@ const router = express.Router();
 
 const authenticateJWT = (req, res, next) => {   
     const secretKey = process.env.JWT_SECRET;
+    
     const token = req.headers.authorization?.split(' ')[1];  // Get the token from the Authorization header
 
     if (token) {
