@@ -53,6 +53,7 @@ router.get("/byUserEmail/:email", authenticateJWT, async (req, res) => {
 
     // Format the response with the required fields
     const formattedDestinations = travelDestinations.map(dest => ({
+      _id:dest._id,
       title: dest.title,
       description: dest.description,
       location: dest.locationId.location,
