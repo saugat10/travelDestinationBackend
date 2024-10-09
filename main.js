@@ -80,6 +80,7 @@ document.getElementById("signUpForm").addEventListener("submit", async (e) => {
 
   // If mongoose errors in the response, validate
   if (response.error) {
+    console.log(response.error);
     if (response.error.firstname) {
       document.getElementById("firstnameError").textContent =
         response.error.firstname.message || "Invalid first name";
@@ -116,9 +117,9 @@ document.getElementById("signUpForm").addEventListener("submit", async (e) => {
       error.textContent = "";
     });
     // clear all input fields
-    document.querySelectorAll(".signUpField").forEach((field) => {
-      field.value = "";
-    });
+    // document.querySelectorAll(".signUpField").forEach((field) => {
+    //   field.value = "";
+    // });
     console.log("User registered successfully:", response);
   }
 });

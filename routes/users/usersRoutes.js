@@ -12,6 +12,26 @@ router.post("/", async (req, res) => {
   try {
     const { firstname, lastname, username, email, password } = req.body;
     const createDate = new Date();
+
+    // Check if username or email already exists
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+
+    if (existingUser) {
+      const errors = {};
+
+      // Check if the existing user matches by username or email
+      if (existingUser.username === username) {
+        errors.username = { message: "A user with this user name already exists" };
+      }
+      if (existingUser.email === email) {
+        errors.email = { message: "A user with this email already exists" };
+      }
+
+      return res.status(400).json({ error: errors });
+    }
+
     const user = {
       userId: new ObjectId(),
       firstname,
@@ -21,19 +41,18 @@ router.post("/", async (req, res) => {
       password,
       createDate,
     };
+
     await User.create(user);
     res.status(201).json(user);
     console.log(user);
   } catch (error) {
-    // log the error object and return what you need from it to the frontend
-    console.error(error.errors);
-    // Return Mongoose validation error to the frontend
+    // Handle Mongoose validation errors
     if (error.errors) {
-      res.status(400).json({ error: error.errors });
-    } else {
-      console.error(`Error creating data: ${error}`);
-      res.status(500).json({ message: "Server error" });
+      return res.status(400).json({ error: error.errors });
     }
+
+    console.error(`Error creating data: ${error}`);
+    res.status(500).json({ message: "Server error" });
   }
 });
 export default router;

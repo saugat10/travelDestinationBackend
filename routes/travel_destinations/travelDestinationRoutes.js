@@ -53,7 +53,8 @@ router.post("/", async (req, res) => {
   } catch (error) {
     // log the error object and return what you need from it to the frontend
     console.error(error.errors);
-    // Return Mongoose validation error to the frontend
+    // Mongoose validation errors are within the error.erros
+    // Return Mongoose validations errors to the frontend
     if (error.errors) {
       res.status(400).json({ error: error.errors });
     } else {
