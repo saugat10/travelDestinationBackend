@@ -25,6 +25,7 @@ router.get("/profile", authenticateJWT, async (req, res) => {
             res.status(200).json({ 
                 message: `Welcome ${user.username}`, 
                 user: { 
+                    id: user._id.toString(),
                     firstname: user.firstname,
                     lastname: user.lastname,
                     email: user.email,
@@ -81,6 +82,7 @@ router.post("/login", async (req, res) => {
 
         // Compare the provided password with the stored hashed password
         const passwordMatch = await bcrypt.compare(password, user.password);
+        console.log(passwordMatch);
         if (!passwordMatch) {
             return res.status(401).json({ message: "Invalid password" });
         }
@@ -104,9 +106,9 @@ router.post("/", async (req, res) => {
     try {
         const { username, firstname, lastname, email, password } = req.body;
         const createDate = new Date();
-
+        console.log(req.body);
         const hashedPassword = await bcrypt.hash(password, 10);
-
+    
         const user = {
             username,
             email,
@@ -115,7 +117,7 @@ router.post("/", async (req, res) => {
             password: hashedPassword,
             createDate,
         };
-
+        
         await User.create(user);
         res.status(201).json(user);
     } catch (error) {
