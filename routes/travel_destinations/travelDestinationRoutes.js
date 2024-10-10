@@ -48,7 +48,7 @@ router.get("/byUserEmail/:email", authenticateJWT, async (req, res) => {
       .select('title description dateFrom dateTo locationId'); // select only necessary fields
 
     if (!travelDestinations || travelDestinations.length === 0) {
-      return res.status(404).json({ message: "No travel destinations found for this user" });
+      return res.status(200).json({ message: "No travel destinations found for this user" });
     }
 
     // Format the response with the required fields
