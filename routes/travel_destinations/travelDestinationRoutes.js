@@ -1,6 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { TravelDestination, User, Location} from "../../model.js";
+import { TravelDestination, User, Location, Country} from "../../model.js";
 import authenticateJWT from "../middleware.js";
 
 const router = express.Router();
@@ -119,10 +119,10 @@ router.put("/:id", authenticateJWT, async (req, res) => {
     }
 
     // Retrieving user id from the existing destination
-    const { userId: existingUserId, locationId } = existingDestination;
+    const { userId: existingUserId } = existingDestination;
 
     // Fetch the related Location document
-    const location = await Location.findById(locationId);
+    const location = await Location.findById(req.body.locationId);
     if (!location) {
       return res.status(404).json({ message: "Location not found" });
     }
@@ -131,7 +131,7 @@ router.put("/:id", authenticateJWT, async (req, res) => {
     const updatedItem = {
       title: req.body.title,
       description: req.body.description ,
-      locationId:  existingDestination.locationId, 
+      locationId:  location._id, 
       countryId: location.countryId,
       dateFrom: req.body.dateFrom ,
       dateTo: req.body.dateTo,
@@ -145,15 +145,14 @@ router.put("/:id", authenticateJWT, async (req, res) => {
       { $set: updatedItem }
     );
 
-    if (result.modifiedCount === 0) {
-      return res.status(400).json({ message: "No changes made to the travel destination" });
-    }
+    const country = await Country.findById(updatedItem.countryId);
 
     // Return the updated destination and its location
     res.status(200).json({ 
       message: "Travel destination updated successfully", 
       updatedDestination: updatedItem,
-      location
+      location,
+      country
     });
   } catch (error) {
     console.error(`Error updating data: ${error.message}`);
