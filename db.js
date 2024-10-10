@@ -115,6 +115,27 @@ const connectDB = async () => {
                 lastname: "Evans",
                 email: "chris@example.com",
                 password: "passworddef"
+            },
+            {
+                username: "EmmaJohnson1617",
+                firstname: "Emma",
+                lastname: "Johnson",
+                email: "emma@example.com",
+                password: "passwordghi"
+            },
+            {
+                username: "LucasBrown1819",
+                firstname: "Lucas",
+                lastname: "Brown",
+                email: "lucas@example.com",
+                password: "passwordjkl"
+            },
+            {
+                username: "OliviaDavis2021",
+                firstname: "Olivia",
+                lastname: "Davis",
+                email: "olivia@example.com",
+                password: "passwordmno"
             }
         ];
 
@@ -136,39 +157,38 @@ const connectDB = async () => {
             await TravelDestination.init();
             console.log('Created Travel Destinations collection');
 
-            await TravelDestination.create({
-                title: "New York 2022",
-                description: "A beautiful trip.",
-                locationId: await Location.findOne({ location: "New York" }).then(l => l._id),
-                picture: "http://example.com/image.jpg",
-                dateFrom: new Date(),
-                dateTo: new Date(new Date().setDate(new Date().getDate() + 7)),
-                userId: await User.findOne({ email: "john@example.com" }).then(u => u._id), // Reference the default _id from the created user
-                createDate: new Date()
-            });
+            const users = await User.find(); // Retrieve all users
 
-            await TravelDestination.create({
-                title: "Trip to Toronto",
-                description: "Exploring the CN Tower.",
-                locationId: await Location.findOne({ location: "Toronto" }).then(l => l._id),
-                picture: "http://example.com/image2.jpg",
-                dateFrom: new Date(),
-                dateTo: new Date(new Date().setDate(new Date().getDate() + 5)),
-                userId: await User.findOne({ email: "jane@example.com" }).then(u => u._id),
-                createDate: new Date()
-            });
+            // Predefined travel destination data
+            const travelDestinations = [
+                { title: "Trip to Paris", description: "A lovely visit to the city of lights." },
+                { title: "Explore Tokyo", description: "An adventure in the bustling capital of Japan." },
+                { title: "Beach Vacation in Cancun", description: "Relaxing by the beautiful beaches." },
+                { title: "Cultural Tour in Rome", description: "Discover the history of ancient Rome." },
+                { title: "Adventure in New York", description: "Experience the vibrant life of NYC." },
+                { title: "Nature Retreat in Sydney", description: "Enjoy the beautiful landscapes of Australia." },
+                { title: "Safari in South Africa", description: "A thrilling wildlife experience." },
+                { title: "Skiing in the Swiss Alps", description: "Hit the slopes in stunning Switzerland." },
+                { title: "Visit to the Grand Canyon", description: "Breathtaking views of this natural wonder." },
+                { title: "Cruise in the Caribbean", description: "Sailing the beautiful blue waters." }
+            ];
 
-            await TravelDestination.create({
-                title: "Paris Adventure",
-                description: "Visiting the Eiffel Tower.",
-                locationId: await Location.findOne({ location: "Paris" }).then(l => l._id),
-                picture: "http://example.com/image3.jpg",
-                dateFrom: new Date(),
-                dateTo: new Date(new Date().setDate(new Date().getDate() + 10)),
-                userId: await User.findOne({ email: "mike@example.com" }).then(u => u._id),
-                createDate: new Date()
-            });
-
+            // Loop through each user to create two unique travel destinations
+            for (const user of users) {
+                for (let i = 0; i < 2; i++) { // Create two destinations per user
+                    const randomDestination = travelDestinations[Math.floor(Math.random() * travelDestinations.length)];
+                    await TravelDestination.create({
+                        title: `${randomDestination.title} by ${user.firstname}`,
+                        description: randomDestination.description,
+                        locationId: await Location.findOne({}).then(l => l._id), // Get a random location's ID
+                        dateFrom: new Date(),
+                        dateTo: new Date(new Date().setDate(new Date().getDate() + 7)),
+                        userId: user._id, // Reference the user's _id
+                        createDate: new Date()
+                    });
+                    console.log(`Added travel destination for user: ${user.firstname} ${user.lastname}\n`);
+                }
+            }
             console.log('Added default travel destinations to Travel Destinations collection\n');
         }
 

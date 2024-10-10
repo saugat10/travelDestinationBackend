@@ -24,7 +24,6 @@ const travelDestinationSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
   locationId: { type: mongoose.Schema.Types.ObjectId, ref: "Location" }, //  reference to Location
-  picture: { type: String }, // Assuming the picture is a URL
   dateFrom: { type: Date },
   dateTo: { type: Date },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, //  userId reference to User
