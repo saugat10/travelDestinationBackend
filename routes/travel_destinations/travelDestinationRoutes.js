@@ -30,7 +30,7 @@ router.get("/:id", async (req, res) => {
 router.get("/byUserEmail/:email", authenticateJWT, async (req, res) => {
   try {
     const email = req.params.email;
-
+    
     // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
