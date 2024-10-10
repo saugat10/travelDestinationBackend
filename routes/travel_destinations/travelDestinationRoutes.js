@@ -1,6 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { TravelDestination, User } from "../../model.js";
+import { TravelDestination, User, Location} from "../../model.js";
 import authenticateJWT from "../middleware.js";
 
 const router = express.Router();
@@ -106,17 +106,56 @@ router.post("/", authenticateJWT, async (req, res) => {
 });
 
 // Update a travel destination by id
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticateJWT, async (req, res) => {
   try {
     const id = req.params.id;
-    const updateData = req.body;
 
-    const result = await TravelDestination.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
-    if (result.modifiedCount === 0) {
+    // Retrieving the existing travel destination
+    const existingDestination = await TravelDestination.findById(id);
+    
+    // Check if the destination exists
+    if (!existingDestination) {
       return res.status(404).json({ message: "Travel destination not found" });
     }
 
-    res.status(200).json({ message: "Travel destination updated successfully" });
+    // Retrieving user id from the existing destination
+    const { userId: existingUserId, locationId } = existingDestination;
+
+    // Fetch the related Location document
+    const location = await Location.findById(locationId);
+    if (!location) {
+      return res.status(404).json({ message: "Location not found" });
+    }
+
+    //TODO: understand if this object has correct data
+    // Create the updatedItem object and manually map attributes
+    const updatedItem = {
+      title: req.body.title,
+      description: req.body.description ,
+      locationId:  existingDestination.locationId, 
+      countryId: location.countryId,
+      dateFrom: req.body.dateFrom ,
+      dateTo: req.body.dateTo,
+      userId: existingUserId, // Keep the existing userId
+      createDate: existingDestination.createDate 
+    };
+
+    // Update the travel destination
+    const result = await TravelDestination.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatedItem }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(400).json({ message: "No changes made to the travel destination" });
+    }
+
+    // Return the updated destination and its location
+    res.status(200).json({ 
+      message: "Travel destination updated successfully", 
+      updatedDestination: updatedItem,
+      location
+    });
   } catch (error) {
     console.error(`Error updating data: ${error.message}`);
     res.status(500).json({ message: "Server error" });
@@ -124,18 +163,23 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete a travel destination by id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateJWT, async (req, res) => {
   try {
     const id = req.params.id;
-    const result = await TravelDestination.deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount === 0) {
+
+    // Check if the travel destination exists
+    const travelDestination = await TravelDestination.findById(id);
+    if (!travelDestination) {
       return res.status(404).json({ message: "Travel destination not found" });
     }
 
+    // Delete the travel destination
+    await TravelDestination.deleteOne({ _id: new ObjectId(id) });
+
     res.status(200).json({ message: "Travel destination deleted successfully" });
   } catch (error) {
-    console.error(`Error deleting data: ${error.message}`);
-    res.status(500).json({ message: "Server error" });
+    console.error(`Error deleting travel destination: ${error.message}`);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
