@@ -127,7 +127,6 @@ router.put("/:id", authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: "Location not found" });
     }
 
-    //TODO: understand if this object has correct data
     // Create the updatedItem object and manually map attributes
     const updatedItem = {
       title: req.body.title,
