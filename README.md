@@ -11,3 +11,6 @@ Project by Orestis, Saugat, Andrea
 1. Create new connection in mongodb compass.
 2. Set the `MONGODB_URI` to your mongodb_uri in the `.env` file
 3. Run `node app.js`.
+
+# Auth
+1. Set the `JWT_SECRET` to your secret in the `.env` file
