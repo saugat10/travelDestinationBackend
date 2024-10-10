@@ -21,33 +21,16 @@ router.get("/profile", authenticateJWT, async (req, res) => {
 
     const user = await User.findOne({ _id: new ObjectId(userId) });
 
-        if (user) {
-            res.status(200).json({ 
-                message: `Welcome ${user.username}`, 
-                user: { 
-                    id: user._id.toString(),
-                    firstname: user.firstname,
-                    lastname: user.lastname,
-                    email: user.email,
-                    username: user.username, 
-                }
-            });
-        } else {
-            res.status(404).json({ message: "User not found" });
-        }
-    } catch (error) {
-        console.error('Error retrieving user profile:', error);
-        res.status(500).json({ message: "An error occurred while retrieving the profile" });
-    }
     if (user) {
       res.status(200).json({
         message: `Welcome ${user.username}`,
-        user: {
-          firstname: user.firstname,
-          lastname: user.lastname,
-          email: user.email,
-          username: user.username,
-        },
+        user: { 
+            id: user._id.toString(),
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            username: user.username, 
+        }
       });
     } else {
       res.status(404).json({ message: "User not found" });
